@@ -1,7 +1,5 @@
 from flask import Flask,render_template, request, redirect, session, flash, url_for
 from functools import wraps
-import pymysql.cursors
-import os
 import mysql.connector as mysql
 
 app=Flask(__name__, template_folder='templates')
@@ -17,6 +15,7 @@ cur = db.cursor()
  
 
 ####################################################### 
+
 #Login
 @app.route('/')
 @app.route('/login',methods=['POST','GET'])
@@ -25,7 +24,6 @@ def login():
     if request.method == 'POST':
         email = request.form["email"]
         pwd = request.form["password"]
-        # cur=mysql.connection.cursor()
         cur.execute("SELECT nama FROM `users` WHERE email=%s AND password=%s",(email, pwd, ))
         data=cur.fetchone()
         if data:
@@ -37,7 +35,6 @@ def login():
             flash('Invalid Login. Try Again','danger')
     return render_template("login.html")
   
-#check if user logged in
 def is_logged_in(f):
 	@wraps(f)
 	def wrap(*args,**kwargs):
@@ -56,9 +53,7 @@ def reg():
         name=request.form["name"]
         email=request.form["email"]
         pwd=request.form["password"]
-        # cur=mysql.connection.cursor()
         cur.execute("INSERT INTO `users`(password, nama, email) values(%s, %s, %s)",(pwd, name, email, ))
-        # mysql.connection.commit()
         db.commit()
         cur.close()
         flash('Registration Successfully. Login Here...','success')
