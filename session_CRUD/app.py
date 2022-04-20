@@ -13,22 +13,21 @@ db = mysql.connect(
 
 cur = db.cursor()
  
-
 ####################################################### 
 
 #Login
 @app.route('/')
 @app.route('/login',methods=['POST','GET'])
 def login():
-    # status=True
+    status=True
     if request.method == 'POST':
         email = request.form["email"]
         pwd = request.form["password"]
         cur.execute("SELECT nama FROM `users` WHERE email=%s AND password=%s",(email, pwd, ))
-        data=cur.fetchone()
+        data = cur.fetchone()
         if data:
-            session['logged_in']=True
-            session['username']=data[0]
+            session['logged_in'] = True
+            session['username'] = data[0]
             flash('Login Successfully','success')
             return redirect(url_for('index'))
         else:
@@ -67,9 +66,7 @@ def logout():
 	flash('You are now logged out','success')
 	return redirect(url_for('login'))
 
-
 ###########################################
-
 
 @app.route('/index')
 def index():   
@@ -78,24 +75,21 @@ def index():
    results = cur.fetchall()
    return render_template('home.html', data=results)
 
-
 # untuk membuat form tambah
-@app.route('/tambah', methods=['GET','POST'])
+@app.route('/tambah', methods=['POST'])
 def tambah():
    if request.method == 'POST':
       nama = request.form['nama']
       harga = request.form['harga']
       stok = request.form['stok']
-      sql = "INSERT INTO data_penjualan (nama_barang, harga,stok) VALUES (%s, %s, %s)"
-      val = (nama, harga, stok)
-      cur.execute(sql, val)
+      cur.execute("INSERT INTO `data_penjualan` (nama_barang, harga, stok) VALUES (%s, %s, %s);",(nama, harga, stok, ))
       db.commit()
       return redirect(url_for('index'))
    else:
       return render_template('tambah.html')
 
 # untuk form edit
-@app.route('/edit/<int:id_barang>', methods=['GET', 'POST'])
+@app.route('/edit/<int:id_barang>', methods=['POST'])
 def update(id_barang):
    cur.execute('SELECT * FROM `data_penjualan` WHERE id_barang=%s', (id_barang, ))
    results = cur.fetchone()
@@ -104,9 +98,7 @@ def update(id_barang):
       nama = request.form['nama']
       harga = request.form['harga']
       stok = request.form['stok']
-      sql = "UPDATE `data_penjualan` SET nama_barang=%s, harga=%s, stok=%s WHERE id_barang=%s;"
-      val = (nama, harga, stok, id_barang, )
-      cur.execute(sql, val)
+      cur.execute("UPDATE `data_penjualan` SET nama_barang=%s, harga=%s, stok=%s WHERE id_barang=%s;",(nama, harga, stok, id_barang, ))
       db.commit()
       return redirect(url_for("index"))
    else:
@@ -115,7 +107,7 @@ def update(id_barang):
 # untuk menghapus data
 @app.route('/hapus/<int:id_barang>', methods=['GET','POST'])
 def hapus(id_barang):
-   cur.execute('DELETE FROM data_penjualan WHERE id_barang=%s', (id_barang,))
+   cur.execute('DELETE FROM `data_penjualan` WHERE id_barang=%s',(id_barang, ))
    db.commit()
    return redirect(url_for('index'))
 
