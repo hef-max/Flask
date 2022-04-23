@@ -1,0 +1,71 @@
+<div id="modalEdit{{ row.0 }}" class="modal fade" role="dialog">  
+  <div class="modal-dialog">
+
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Edit Data</h4>
+      </div>
+
+      <form action="{{ url_for('update') }}" method="POST" class="pt-2 pb-2 container-fluid">
+        <div class="form-group w-25">
+          <label>User ID</label>
+          <input type="number" name="user_id" class="form-control" value="{{ row.0 }}">
+        </div>
+
+        <div class="form-group w-50">
+          <label>User Name</label>
+          <input type="text" name="user_name" class="form-control" value="{{ row.1 }}">
+        </div>
+
+        <label>User Level</label>
+          <div class="form-check w-25" >
+            <input type="radio" name="user_level" value="Easy" class="formcheck-input">
+            <label>Easy</label>
+          </div>
+
+          <div class="form-check w-25">
+            <input type="radio" name="user_level" value="Hard" class="formcheck-input">
+            <label>Hard</label>
+          </div>
+
+        <div class="form-group w-50">
+          <label>User Classes</label>
+          <select name="user_classes" class="form-control">
+            <option value="0">--Pilih User Classes--</option>
+            <option value="Tank">Tank</option>
+            <option value="Mage">Mage</option>
+            <option value="Assassins">Assassins</option>
+            <option value="Fighter">Fighter</option>
+            <option value="Marksman">Marksman</option>
+          </select>
+        </div>
+
+        <label>User Build</label>
+          <div class="form-check w-25">
+            <input type="checkbox" name="user_build" value="Immortality" class="form-check-input">
+            <label>Immortality</label>
+          </div>
+
+          <div class="form-check w-25">
+            <input type="checkbox" name="user_build" value="Swift Boots" class="form-check-input">
+            <label>Swift Boots</label>
+          </div>
+
+          <div class="form-check w-25">
+            <input type="checkbox" name="user_build" value="Magic Blade" class="form-check-input">
+            <label>Magic Blade</label>
+          </div>
+
+          <div class="form-group w-25">
+            <textarea name="user_bio" cols="30" rows="10" value="{{ row.5 }}"></textarea>
+          </div>
+
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" name="submit">Simpan</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+      </form>
+
+    </div>
+  </div>
+</div>
