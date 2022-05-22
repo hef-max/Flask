@@ -8,11 +8,12 @@ db = mysql.connect(
     host="localhost",
     user="root",
     password="",
-    database="test"
+    database="kuliah"
     )
 
 cur = db.cursor()
- 
+cek = []
+
 ####################################################### 
 
 #Login
@@ -23,16 +24,18 @@ def login():
     if request.method == 'POST':
         email = request.form["email"]
         pwd = request.form["password"]
-        cur.execute("SELECT nama FROM `users` WHERE email=%s AND password=%s",(email, pwd, ))
+        cur.execute("SELECT * FROM `users` WHERE email=%s AND pass=%s",(email, pwd, ))
         data = cur.fetchone()
         if data:
+            cek.append(1)
             session['logged_in'] = True
             session['username'] = data[0]
             flash('Login Successfully','success')
             return redirect(url_for('index'))
         else:
             flash('Invalid Login. Try Again','danger')
-    return render_template("login.html")
+    else:
+        return render_template("login.html")
   
 def is_logged_in(f):
 	@wraps(f)
@@ -52,7 +55,7 @@ def reg():
         name=request.form["name"]
         email=request.form["email"]
         pwd=request.form["password"]
-        cur.execute("INSERT INTO `users`(password, nama, email) values(%s, %s, %s)",(pwd, name, email, ))
+        cur.execute("INSERT INTO `users` (password, nama) VALUES (%s, %s, %s)",(pwd, name, email ))
         db.commit()
         cur.close()
         flash('Registration Successfully. Login Here...','success')
@@ -69,47 +72,48 @@ def logout():
 ###########################################
 
 @app.route('/index')
-def index():   
-   sql = "SELECT * FROM `data_penjualan`;"
-   cur.execute(sql)
-   results = cur.fetchall()
-   return render_template('home.html', data=results)
+def index():
+    sql = "SELECT * FROM `tbl_mahasiswa`;"
+    cur.execute(sql)
+    results = cur.fetchall()
+    cek.clear()
+    return render_template('home.html', data=results)
 
 # untuk membuat form tambah
-@app.route('/tambah', methods=['POST'])
+@app.route('/tambah', methods=['GET', 'POST'])
 def tambah():
-   if request.method == 'POST':
-      nama = request.form['nama']
-      harga = request.form['harga']
-      stok = request.form['stok']
-      cur.execute("INSERT INTO `data_penjualan` (nama_barang, harga, stok) VALUES (%s, %s, %s);",(nama, harga, stok, ))
-      db.commit()
-      return redirect(url_for('index'))
-   else:
-      return render_template('tambah.html')
+    if request.method == 'POST':
+        npm = request.form['npm']
+        nama = request.form['nama']
+        prodi = request.form['prodi']
+        cur.execute("INSERT INTO `tbl_mahasiswa` VALUES (%s, %s, %s);",(npm, nama, prodi, ))
+        db.commit()
+        return redirect(url_for('index'))
+    else:
+        return render_template('tambah.html')
 
 # untuk form edit
-@app.route('/edit/<int:id_barang>', methods=['POST'])
-def update(id_barang):
-   cur.execute('SELECT * FROM `data_penjualan` WHERE id_barang=%s', (id_barang, ))
-   results = cur.fetchone()
-   if request.method == 'POST':
-      id_barang = request.form['id_barang']
-      nama = request.form['nama']
-      harga = request.form['harga']
-      stok = request.form['stok']
-      cur.execute("UPDATE `data_penjualan` SET nama_barang=%s, harga=%s, stok=%s WHERE id_barang=%s;",(nama, harga, stok, id_barang, ))
-      db.commit()
-      return redirect(url_for("index"))
-   else:
-      return render_template("edit.html", id_data=results[0]) 
+@app.route('/edit/<int:npm>', methods=['POST', 'GET'])
+def update(npm):
+    cur.execute('SELECT * FROM `tbl_mahasiswa` WHERE npm=%s',(npm, ))
+    results = cur.fetchone()
+    # print("npm:",npm,"resuls:", results)
+    if request.method == 'POST':
+        npm = request.form['npm']
+        nama = request.form['nama']
+        prodi = request.form['prodi']
+        cur.execute("UPDATE `tbl_mahasiswa` SET nama=%s, prodi=%s WHERE npm=%s;",(nama, prodi, npm, ))
+        db.commit()
+        return redirect(url_for("index"))
+    else:
+        return render_template("edit.html", id_data=results[0]) 
       
 # untuk menghapus data
-@app.route('/hapus/<int:id_barang>', methods=['GET','POST'])
-def hapus(id_barang):
-   cur.execute('DELETE FROM `data_penjualan` WHERE id_barang=%s',(id_barang, ))
-   db.commit()
-   return redirect(url_for('index'))
+@app.route('/hapus/<int:npm>', methods=['GET','POST'])
+def hapus(npm):
+    cur.execute('DELETE FROM `tbl_mahasiswa` WHERE npm=%s',(npm, ))
+    db.commit()
+    return redirect(url_for('index'))
 
 if __name__=='__main__':
     app.secret_key='secret123'
